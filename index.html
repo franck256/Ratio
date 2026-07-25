@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Automatismes : Ratios & Engrenages (3ème)</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --dark: #2c3e50;
+            --bg-box: #ebf3fc;
+            --bg-sol: #e8f8f5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .user-info {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .user-info input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            width: 25%;
+            transition: width 0.3s ease;
+        }
+
+        .exercise-card {
+            display: none;
+        }
+
+        .exercise-card.active {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .box-question {
+            background-color: var(--bg-box);
+            border-radius: 12px;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+        }
+
+        .math-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .math-expr {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-size: 1.3em;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            padding: 0 4px;
+        }
+
+        .numerator {
+            border-bottom: 2px solid var(--dark);
+            padding-bottom: 2px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .denominator {
+            padding-top: 2px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .format-hint {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        input[type="text"].answer-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"].answer-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .feedback-box {
+            display: none;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background-color: #e8f8f5;
+            border-left: 5px solid var(--success);
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .feedback-box.incorrect {
+            display: block;
+            background-color: #fdedec;
+            border-left: 5px solid var(--error);
+            color: #c0392b;
+        }
+
+        .solution-details {
+            margin-top: 10px;
+            color: var(--dark);
+            font-weight: normal;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-validate { background-color: var(--success); color: white; }
+        .btn-next { background-color: var(--primary); color: white; display: none; }
+
+        /* Styles du Bilan Final */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .report-table th, .report-table td {
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .report-table th {
+            background-color: #f1f5f9;
+        }
+
+        .score-badge {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--primary);
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+        }
+        .status-badge.ok { background-color: var(--success); }
+        .status-badge.ko { background-color: var(--error); }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="main-widget">
+    <h1>Automatismes : Ratios & Engrenages</h1>
+    <div class="subtitle">Niveau 3ème — Évaluation des compétences</div>
+
+    <div class="user-info" id="user-block">
+        <label for="student-name">Élève (Nom & Prénom) :</label>
+        <input type="text" id="student-name" placeholder="Ex: Chloé Dupuis">
+    </div>
+
+    <div class="progress-bar" id="progress-container">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- EXERCICE 1 -->
+    <div class="exercise-card active" id="ex1">
+        <span class="badge">Exercice 1 : Partage et Ratio</span>
+        <div class="box-question"><div class="math-row" id="ex1-text"></div></div>
+        <div class="format-hint">Format attendu : Écrire les deux nombres séparés par un espace (ex: 24 36)</div>
+        <input type="text" class="answer-input" id="input-ex1" placeholder="Votre réponse...">
+        <div class="feedback-box" id="feedback-ex1"></div>
+    </div>
+
+    <!-- EXERCICE 2 -->
+    <div class="exercise-card" id="ex2">
+        <span class="badge">Exercice 2 : Ratio à 3 composants</span>
+        <div class="box-question"><div class="math-row" id="ex2-text"></div></div>
+        <div class="format-hint">Format attendu : Écrire les trois nombres séparés par des espaces (ex: 50 75 125)</div>
+        <input type="text" class="answer-input" id="input-ex2" placeholder="Votre réponse...">
+        <div class="feedback-box" id="feedback-ex2"></div>
+    </div>
+
+    <!-- EXERCICE 3 -->
+    <div class="exercise-card" id="ex3">
+        <span class="badge">Exercice 3 : Engrenages — Nombre de dents</span>
+        <div class="box-question"><div class="math-row" id="ex3-text"></div></div>
+        <div class="format-hint">Format attendu : Écrire uniquement le nombre numérique (ex: 36)</div>
+        <input type="text" class="answer-input" id="input-ex3" placeholder="Votre réponse...">
+        <div class="feedback-box" id="feedback-ex3"></div>
+    </div>
+
+    <!-- EXERCICE 4 -->
+    <div class="exercise-card" id="ex4">
+        <span class="badge">Exercice 4 : Engrenages — Vitesse de rotation</span>
+        <div class="box-question"><div class="math-row" id="ex4-text"></div></div>
+        <div class="format-hint">Format attendu : Écrire uniquement le nombre numérique (ex: 45)</div>
+        <input type="text" class="answer-input" id="input-ex4" placeholder="Votre réponse...">
+        <div class="feedback-box" id="feedback-ex4"></div>
+    </div>
+
+    <div class="actions" id="action-block">
+        <button class="btn-validate" id="btn-val" onclick="validateAnswer()">Valider la réponse</button>
+        <button class="btn-next" id="btn-nxt" onclick="nextQuestion()">Question suivante »</button>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+    let score = 0;
+    
+    // Données pour stocker les résultats du bilan
+    let quizData = {
+        ex1: { q: "", user: "", expectedVisual: "", isCorrect: false, cleanExpected: "" },
+        ex2: { q: "", user: "", expectedVisual: "", isCorrect: false, cleanExpected: "" },
+        ex3: { q: "", user: "", expectedVisual: "", isCorrect: false, cleanExpected: "" },
+        ex4: { q: "", user: "", expectedVisual: "", isCorrect: false, cleanExpected: "" }
+    };
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Nettoyage des chaînes pour une vérification flexible (enlève €, mL, espaces doubles, virgules)
+    function cleanString(str) {
+        return str.toLowerCase()
+                  .replace(/[€|ml|tours|dents]/g, '')
+                  .replace(/[,;]/g, ' ')
+                  .replace(/\s+/g, ' ')
+                  .trim();
+    }
+
+    // ==========================================
+    // GÉNÉRATION DES EXERCICES
+    // ==========================================
+    
+    // Ex 1
+    const r1A = getRandomInt(2, 5);
+    const r1B = getRandomInt(6, 9);
+    const valeurPart1 = getRandomInt(12, 25);
+    const quantite1 = (r1A + r1B) * valeurPart1;
+    const rep1A = r1A * valeurPart1;
+    const rep1B = r1B * valeurPart1;
+    quizData.ex1.q = `Partage de ${quantite1} € au ratio ${r1A} : ${r1B}`;
+    quizData.ex1.cleanExpected = `${rep1A} ${rep1B}`;
+    quizData.ex1.expectedVisual = `${rep1A} € et ${rep1B} €`;
+    document.getElementById('ex1-text').innerHTML = `Deux frères se partagent une somme de ${quantite1} € selon le ratio <span class="math-expr">${r1A} : ${r1B}</span>. Quelle est la part de chacun ?`;
+    
+    // Ex 2
+    const r2A = getRandomInt(1, 3);
+    const r2B = getRandomInt(4, 5);
+    const r2C = getRandomInt(6, 8); 
+    const coef2 = getRandomInt(15, 35); 
+    const volumeTotal = (r2A + r2B + r2C) * coef2;
+    const rep2A = r2A * coef2;
+    const rep2B = r2B * coef2;
+    const rep2C = r2C * coef2;
+    quizData.ex2.q = `Cocktail de ${volumeTotal} mL au ratio ${r2A} : ${r2B} : ${r2C}`;
+    quizData.ex2.cleanExpected = `${rep2A} ${rep2B} ${rep2C}`;
+    quizData.ex2.expectedVisual = `${rep2A} mL, ${rep2B} mL, ${rep2C} mL`;
+    document.getElementById('ex2-text').innerHTML = `Pour préparer un cocktail de ${volumeTotal} mL, on mélange du jus d'orange, de l'ananas et de la grenadine selon le ratio <span class="math-expr">${r2A} : ${r2B} : ${r2C}</span>. Calcule le volume de chaque ingrédient.`;
+
+    // Ex 3
+    const dentsA3 = getRandomInt(12, 24); 
+    const toursA3 = getRandomInt(4, 8);
+    const toursB3 = toursA3 / 2; 
+    const dentsB3 = dentsA3 * 2;
+    quizData.ex3.q = `Roue A (${dentsA3} dents, ${toursA3} tr/min) entraîne Roue B (${toursB3} tr/min). Dents de B ?`;
+    quizData.ex3.cleanExpected = `${dentsB3}`;
+    quizData.ex3.expectedVisual = `${dentsB3} dents`;
+    document.getElementById('ex3-text').innerHTML = `Une roue A possédant <span class="math-expr">${dentsA3}</span> dents tourne à une vitesse de <span class="math-expr">${toursA3}</span> tours par minute. Elle entraîne une roue B qui effectue <span class="math-expr">${toursB3}</span> tours par minute. Combien la roue B possède-t-elle de dents ?`;
+
+    // Ex 4
+    const dentsA4 = getRandomInt(15, 20);
+    const dentsB4 = dentsA4 * 3; 
+    const toursB4 = getRandomInt(10, 30);
+    const toursA4 = toursB4 * 3;
+    quizData.ex4.q = `Roue A (${dentsA4} dents) engrenée avec Roue B (${dentsB4} dents, ${toursB4} tours). Tours de A ?`;
+    quizData.ex4.cleanExpected = `${toursA4}`;
+    quizData.ex4.expectedVisual = `${toursA4} tours`;
+    document.getElementById('ex4-text').innerHTML = `Une roue A de <span class="math-expr">${dentsA4}</span> dents est engrenée avec une grande roue B de <span class="math-expr">${dentsB4}</span> dents. Si la grande roue B fait <span class="math-expr">${toursB4}</span> tours, combien de tours effectue la petite roue A ?`;
+
+    // ==========================================
+    // LOGIQUE DE VALIDATION ET MOTEUR DU QUIZ
+    // ==========================================
+    function updateProgressBar() {
+        document.getElementById('progress').style.width = (currentStep / totalSteps) * 100 + '%';
+    }
+
+    function validateAnswer() {
+        const inputElem = document.getElementById(`input-ex${currentStep}`);
+        const feedbackElem = document.getElementById(`feedback-ex${currentStep}`);
+        const userRaw = inputElem.value;
+        
+        quizData[`ex${currentStep}`].user = userRaw === "" ? "Aucune réponse" : userRaw;
+
+        const userClean = cleanString(userRaw);
+        const expectedClean = quizData[`ex${currentStep}`].cleanExpected;
+
+        // Génération du texte explicatif selon l'exercice en cours
+        let explication = "";
+        if (currentStep === 1) {
+            explication = `Nombre total de parts : ${r1A} + ${r1B} = ${r1A+r1B}. Valeur d'une part : ${quantite1} ÷ ${r1A+r1B} = ${valeurPart1} €. Part A = ${r1A} × ${valeurPart1} = ${rep1A} €. Part B = ${r1B} × ${valeurPart1} = ${rep1B} €.`;
+        } else if (currentStep === 2) {
+            explication = `Total des parts : ${r2A} + ${r2B} + ${r2C} = ${r2A+r2B+r2C} parts. Une part = ${volumeTotal} ÷ ${r2A+r2B+r2C} = ${coef2} mL. Orange : ${rep2A} mL, Ananas : ${rep2B} mL, Grenadine : ${rep2C} mL.`;
+        } else if (currentStep === 3) {
+            explication = `Le produit dents × tours reste constant : ${dentsA3} × ${toursA3} = ${dentsA3*toursA3}. Pour la roue B : ${dentsA3*toursA3} ÷ ${toursB3} = ${dentsB3} dents.`;
+        } else if (currentStep === 4) {
+            explication = `Le rapport des dents est de ${dentsB4} ÷ ${dentsA4} = 3. La roue A possède 3 fois moins de dents, elle tourne donc 3 fois plus vite : ${toursB4} × 3 = ${toursA4} tours.`;
+        }
+
+        // Vérification
+        if (userClean === expectedClean) {
+            feedbackElem.className = "feedback-box correct";
+            feedbackElem.innerHTML = `✔ Correct !<div class="solution-details">${explication}</div>`;
+            score++;
+            quizData[`ex${currentStep}`].isCorrect = true;
+        } else {
+            feedbackElem.className = "feedback-box incorrect";
+            feedbackElem.innerHTML = `✘ Incorrect. La réponse attendue était : <b>${quizData[`ex${currentStep}`].expectedVisual}</b>.<div class="solution-details">${explication}</div>`;
+            quizData[`ex${currentStep}`].isCorrect = false;
+        }
+
+        inputElem.disabled = true;
+        document.getElementById('btn-val').style.display = 'none';
+        
+        const nextBtn = document.getElementById('btn-nxt');
+        nextBtn.style.display = 'block';
+        if (currentStep === totalSteps) {
+            nextBtn.innerHTML = "Voir le bilan final";
+            nextBtn.style.backgroundColor = "var(--dark)";
+        }
+    }
+
+    function nextQuestion() {
+        if (currentStep < totalSteps) {
+            document.getElementById(`ex${currentStep}`).classList.remove('active');
+            currentStep++;
+            document.getElementById(`ex${currentStep}`).classList.add('active');
+            
+            document.getElementById('btn-val').style.display = 'block';
+            document.getElementById('btn-nxt').style.display = 'none';
+            updateProgressBar();
+        } else {
+            showFinalReport();
+        }
+    }
+
+    function showFinalReport() {
+        const studentName = document.getElementById('student-name').value || "Non renseigné";
+        const container = document.getElementById('main-widget');
+        
+        let tableRows = "";
+        for (let i = 1; i <= totalSteps; i++) {
+            let data = quizData[`ex${i}`];
+            let badge = data.isCorrect ? '<span class="status-badge ok">Juste</span>' : '<span class="status-badge ko">Faux</span>';
+            tableRows += `
+                <tr>
+                    <td><b>Ex ${i}</b> : ${data.q}</td>
+                    <td>${data.user}</td>
+                    <td>${badge}</td>
+                    <td><b>${data.expectedVisual}</b></td>
+                </tr>
+            `;
+        }
+
+        container.innerHTML = `
+            <h1>Bilan de l'évaluation</h1>
+            <div class="subtitle">Ratios & Engrenages — Résultats enregistrés</div>
+            
+            <div style="margin-bottom: 10px;"><b>Élève :</b> ${studentName}</div>
+            <div class="score-badge">Note finale : ${score} / ${totalSteps}</div>
+            
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Compétence / Exercice</th>
+                        <th>Saisie de l'élève</th>
+                        <th>Résultat</th>
+                        <th>Correction attendue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+            
+            <button class="btn-action" style="margin-top: 25px; width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" onclick="window.location.reload()">Recommencer un nouveau test</button>
+        `;
+    }
+
+    updateProgressBar();
+</script>
+
+</body>
+</html>
