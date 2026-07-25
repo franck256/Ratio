@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Automatismes : Ratios & Engrenages (3ème)</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --dark: #2c3e50;
+            --bg-box: #ebf3fc;
+            --bg-sol: #e8f8f5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .user-info {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .user-info input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            width: 25%;
+            transition: width 0.3s ease;
+        }
+
+        .exercise-card {
+            display: none;
+        }
+
+        .exercise-card.active {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .box-question {
+            background-color: var(--bg-box);
+            border-radius: 12px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+        }
+
+        .math-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .math-expr {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-size: 1.3em;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            padding: 0 4px;
+        }
+
+        .numerator {
+            border-bottom: 2px solid var(--dark);
+            padding-bottom: 2px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .denominator {
+            padding-top: 2px;
+            text-align: center;
+            width: 100%;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .solution-box {
+            display: none;
+            background-color: var(--bg-sol);
+            border-left: 5px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .solution-box.visible {
+            display: block;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-validate { background-color: var(--success); color: white; }
+        .btn-next { background-color: var(--primary); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Automatismes : Ratios & Engrenages</h1>
+    <div class="subtitle">Niveau 3ème — Progression sans pénalité</div>
+
+    <!-- NOUVEAU : Champ Nom de l'élève -->
+    <div class="user-info">
+        <label for="student-name">Élève (Nom & Prénom) :</label>
+        <input type="text" id="student-name" placeholder="Ex: Chloé Dupuis">
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- EXERCICE 1 : Partage selon un ratio simple -->
+    <div class="exercise-card active" id="ex1">
+        <span class="badge">Exercice 1 : Partage et Ratio</span>
+        <div class="box-question">
+            <div class="math-row" id="ex1-text"></div>
+        </div>
+        <textarea rows="2" placeholder="Votre réponse..."></textarea>
+        <div class="solution-box" id="ex1-solution"></div>
+    </div>
+
+    <!-- EXERCICE 2 : Mélange à 3 composants (Ratio Aléatoire) -->
+    <div class="exercise-card" id="ex2">
+        <span class="badge">Exercice 2 : Ratio à 3 composants</span>
+        <div class="box-question">
+            <div class="math-row" id="ex2-text"></div>
+        </div>
+        <textarea rows="2" placeholder="Votre réponse..."></textarea>
+        <div class="solution-box" id="ex2-solution"></div>
+    </div>
+
+    <!-- EXERCICE 3 : Engrenage — Cas direct -->
+    <div class="exercise-card" id="ex3">
+        <span class="badge">Exercice 3 : Engrenages — Nombre de dents</span>
+        <div class="box-question">
+            <div class="math-row" id="ex3-text"></div>
+        </div>
+        <textarea rows="2" placeholder="Votre réponse..."></textarea>
+        <div class="solution-box" id="ex3-solution"></div>
+    </div>
+
+    <!-- EXERCICE 4 : Engrenage — Cas inverse -->
+    <div class="exercise-card" id="ex4">
+        <span class="badge">Exercice 4 : Engrenages — Vitesse de rotation</span>
+        <div class="box-question">
+            <div class="math-row" id="ex4-text"></div>
+        </div>
+        <textarea rows="2" placeholder="Votre réponse..."></textarea>
+        <div class="solution-box" id="ex4-solution"></div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-validate" onclick="validateExercise()">Valider / Voir Solution</button>
+        <button class="btn-next" onclick="nextExercise()">Passer »</button>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // ==========================================
+    // EXERCICE 1 : Partage d'une somme
+    // ==========================================
+    const r1A = getRandomInt(2, 5);
+    const r1B = getRandomInt(6, 9);
+    const partsTotal1 = r1A + r1B;
+    const valeurPart1 = getRandomInt(12, 25);
+    const quantite1 = partsTotal1 * valeurPart1;
+    const rep1A = r1A * valeurPart1;
+    const rep1B = r1B * valeurPart1;
+
+    document.getElementById('ex1-text').innerHTML = `Deux frères se partagent une somme de ${quantite1} € selon le ratio <span class="math-expr">${r1A} : ${r1B}</span>. Quelle est la part de chacun ?`;
+    document.getElementById('ex1-solution').innerHTML = `<strong>Correction :</strong><br>Nombre total de parts : <span class="math-expr">${r1A} + ${r1B} = ${partsTotal1}</span>.<br>Valeur d'une part : <span class="math-expr">${quantite1} ÷ ${partsTotal1} = ${valeurPart1}</span> €.<br>• Première part : <span class="math-expr">${r1A} × ${valeurPart1} = ${rep1A}</span> €.<br>• Deuxième part : <span class="math-expr">${r1B} × ${valeurPart1} = ${rep1B}</span> €.<br>Réponse : <b>${rep1A} € et ${rep1B} €</b>.`;
+
+    // ==========================================
+    // EXERCICE 2 : Mélange 3 composants (ALÉATOIRE)
+    // ==========================================
+    const r2A = getRandomInt(1, 3);
+    const r2B = getRandomInt(4, 5);
+    const r2C = getRandomInt(6, 8); 
+    const partsTotal2 = r2A + r2B + r2C; 
+    const coef2 = getRandomInt(15, 35); 
+    const volumeTotal = partsTotal2 * coef2;
+    const rep2A = r2A * coef2;
+    const rep2B = r2B * coef2;
+    const rep2C = r2C * coef2;
+
+    document.getElementById('ex2-text').innerHTML = `Pour préparer un cocktail de ${volumeTotal} mL, on mélange du jus d'orange, de l'ananas et de la grenadine selon le ratio <span class="math-expr">${r2A} : ${r2B} : ${r2C}</span>. Calcule le volume de chaque ingrédient.`;
+    document.getElementById('ex2-solution').innerHTML = `<strong>Correction :</strong><br>Total des parts : <span class="math-expr">${r2A} + ${r2B} + ${r2C} = ${partsTotal2}</span> parts.<br>Valeur d'une part : <span class="math-expr">${volumeTotal} ÷ ${partsTotal2} = ${coef2}</span> mL.<br>• Orange : <span class="math-expr">${r2A} × ${coef2} = ${rep2A}</span> mL.<br>• Ananas : <span class="math-expr">${r2B} × ${coef2} = ${rep2B}</span> mL.<br>• Grenadine : <span class="math-expr">${r2C} × ${coef2} = ${rep2C}</span> mL.`;
+
+    // ==========================================
+    // EXERCICE 3 : Engrenages - Trouver les Dents
+    // ==========================================
+    const dentsA3 = getRandomInt(12, 24); 
+    const toursA3 = getRandomInt(4, 8);
+    const toursB3 = toursA3 / 2; 
+    const dentsB3 = dentsA3 * 2;
+
+    document.getElementById('ex3-text').innerHTML = `Une roue A possédant <span class="math-expr">${dentsA3}</span> dents tourne à une vitesse de <span class="math-expr">${toursA3}</span> tours par minute. Elle entraîne une roue B qui effectue <span class="math-expr">${toursB3}</span> tours par minute. Combien la roue B possède-t-elle de dents ?`;
+    document.getElementById('ex3-solution').innerHTML = `<strong>Correction :</strong><br>Le produit (dents × tours) reste constant : <span class="math-expr">${dentsA3} × ${toursA3} = ${dentsA3 * toursA3}</span> dents passées par minute.<br>Pour la roue B : <span class="math-expr">${dentsA3 * toursA3} ÷ ${toursB3} = ${dentsB3}</span>.<br>La roue B possède <b>${dentsB3} dents</b>.`;
+
+    // ==========================================
+    // EXERCICE 4 : Engrenages - Trouver la Vitesse
+    // ==========================================
+    const dentsA4 = getRandomInt(15, 20);
+    const dentsB4 = dentsA4 * 3; 
+    const toursB4 = getRandomInt(10, 30);
+    const toursA4 = toursB4 * 3;
+
+    document.getElementById('ex4-text').innerHTML = `Une roue A de <span class="math-expr">${dentsA4}</span> dents est engrenée avec une grande roue B de <span class="math-expr">${dentsB4}</span> dents. Si la grande roue B fait <span class="math-expr">${toursB4}</span> tours, combien de tours effectue la petite roue A ?`;
+    document.getElementById('ex4-solution').innerHTML = `<strong>Correction :</strong><br>Le rapport des dents est de <span class="math-expr"><div class="fraction"><span class="numerator">${dentsB4}</span><span class="denominator">${dentsA4}</span></div> = 3</span>.<br>La roue A étant plus petite, elle tourne 3 fois plus vite : <span class="math-expr">${toursB4} × 3 = ${toursA4}</span> tours.`;
+
+    // ==========================================
+    // NAVIGATION ET FIN DE TEST PERSONNALISÉE
+    // ==========================================
+    function updateProgressBar() {
+        document.getElementById('progress').style.width = (currentStep / totalSteps) * 100 + '%';
+    }
+
+    function validateExercise() {
+        document.querySelector('.exercise-card.active .solution-box').classList.add('visible');
+    }
+
+    function nextExercise() {
+        const currentCard = document.getElementById('ex' + currentStep);
+        if (currentStep < totalSteps) {
+            currentCard.classList.remove('active');
+            currentStep++;
+            document.getElementById('ex' + currentStep).classList.add('active');
+            updateProgressBar();
+        } else {
+            const student = document.getElementById('student-name').value || "L'élève";
+            alert(`Félicitations ${student}, ton entraînement sur les ratios et les engrenages est terminé !`);
+            window.location.reload();
+        }
+    }
+
+    updateProgressBar();
+</script>
+
+</body>
+</html>
